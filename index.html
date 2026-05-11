@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>invoice</title>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap" rel="stylesheet">
+     <style>
+        :root{
+           --bg-main: #F8F8FB;
+           --text-heading: #0C0E16;
+           --text-sub: #888EB0;
+        }
+        body.dark-theme {
+          --bg-main: #141625;
+          --text-heading: #FFFFFF;
+          --text-sub: #DFE3FA;
+        }
+        .dynamic-bg { background-color: var(--bg-main); transition: all 0.3s ease; }
+        .dynamic-text { color: var(--text-heading); transition: all 0.3s ease; }
+        .dynamic-sub-text { color: var(--text-sub); transition: all 0.3s ease; }
+    </style>
+  </head>
+  <body class="dynamic-bg">
+   <section class="flex flex-col lg:flex-row lg:h-screen min-h-screen">
+    
+    <div class="flex flex-row lg:flex-col h-20 lg:h-screen w-full lg:w-25.75 bg-[#373B53] lg:rounded-tr-[20px] lg:rounded-br-[20px] z-50">
+      
+      <div class="relative w-20 h-20 lg:w-25.75 lg:h-25.75 bg-[#7C5DFA] rounded-r-[20px] overflow-hidden">
+        <div class="absolute bottom-0 left-0 w-full h-[50%] bg-[#9277FF] rounded-tl-[20px]"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <img src="./src/images/Combined Shape (1).svg" alt="logo" class="w-7 lg:w-10">
+        </div>
+      </div>
+
+      <div class="flex flex-row lg:flex-col items-center ml-auto lg:ml-0 lg:mt-auto gap-6 pr-6 lg:pr-0 lg:pb-6">
+        <img src="./src/images/Path.svg" alt="moon" id="theme-switcher" class="cursor-pointer w-5">
+        
+        <div class="w-px h-full lg:h-px lg:w-full bg-[#494E6E]"></div>
+        
+        <img src="./src/images/Oval.svg" alt="man" class="w-8 h-8 lg:w-10 lg:h-10">
+      </div>
+    </div>
+
+    <div class="dynamic-bg flex-1 flex flex-col items-center p-8 lg:p-12 px-6">
+      <div class="flex justify-between items-center w-full max-w-182.5">
+        <div>
+          <h1 class="dynamic-text font-['League_Spartan'] font-bold text-[24px] lg:text-[36px] tracking-[-1.13px]">Invoices</h1>
+          <p class="dynamic-sub-text font-['League_Spartan'] font-medium text-[13px] mt-1">No invoices</p>
+        </div>
+         <div class="flex gap-4 lg:gap-8 items-center">
+          <div class="flex gap-3 items-center cursor-pointer">
+            <p class="dynamic-text font-['League_Spartan'] font-bold text-[15px]">Filter</p>
+            <img src="./src/images/Path 2.png" alt="drop-down" class="w-2">
+          </div>
+
+          <div class="bg-[#7C5DFA] hover:bg-[#9277FF] px-2 py-2 lg:w-37.5 h-12 rounded-full flex items-center gap-2 lg:gap-4 cursor-pointer transition-colors">
+            <div class="bg-white rounded-full p-3 w-8 h-8 flex items-center justify-center" id="new-invoice">
+              <img src="./src/images/+.svg" alt="plus">
+            </div>
+            <span class="text-white font-bold text-[15px] pr-2 lg:pr-0">New  <span class="hidden lg:inline">Invoice</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col items-center justify-center mt-12">
+        <img src="./src/images/Email campaign_Flatline.svg" alt="email">
+        <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 dynamic-text">There is nothing here</h1>
+        <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">  Create an invoice by clicking the</p>
+        <p class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]">New Invoice button and get started</p>
+        
+      </div>
+
+    </div>
+  </section>
+    <script type="module" src="/src/main.js"></script>
+    <script src="./home-page.js"></script>
+  </body>
+</html>
