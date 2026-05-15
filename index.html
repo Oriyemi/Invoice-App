@@ -47,23 +47,26 @@
       <div class="flex justify-between items-center w-full max-w-182.5">
         <div>
           <h1 class="dynamic-text font-['League_Spartan'] font-bold text-[24px] lg:text-[36px] tracking-[-1.13px]">Invoices</h1>
-          <p class="dynamic-sub-text font-['League_Spartan'] font-medium text-[13px] mt-1">No invoices</p>
+          <p id="total-invoices" class="dynamic-sub-text font-['League_Spartan'] font-medium text-[13px] mt-1">No invoices</p>
         </div>
          <div class="flex gap-4 lg:gap-8 items-center">
           <div class="flex gap-3 items-center cursor-pointer">
-            <p class="dynamic-text font-['League_Spartan'] font-bold text-[15px]">Filter</p>
-            <img src="./src/images/Path 2.png" alt="drop-down" class="w-2">
+            <p class="dynamic-text font-['League_Spartan'] font-bold text-[15px]">Filter by status</p>
+            <img src="./src/images/Path 2.png" alt="drop-down" class="w-2" id="drop-down">
+            <div>
+
+            </div>
           </div>
 
           <button class="bg-[#7C5DFA] hover:bg-[#9277FF] px-2 py-2 lg:w-37.5 h-12 rounded-full flex items-center gap-2 lg:gap-4 cursor-pointer transition-colors">
             <div class="bg-white rounded-full p-3 w-8 h-8 flex items-center justify-center" id="openForm">
               <img src="./src/images/+.svg" alt="plus">
             </div>
-            <span class="text-white font-bold text-[15px] pr-2 lg:pr-0">New  <span class="hidden lg:inline">Invoice</span></span>
+            <span class="text-white font-bold text-[15px] pr-2 lg:pr-0">New Invoice</span>
           </button>
         </div>
       </div>
-      <div class="flex flex-col items-center justify-center mt-12">
+      <div id="invoice-display" class="flex flex-col items-center justify-center mt-12">
         <img src="./src/images/Email campaign_Flatline.svg" alt="email">
         <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 dynamic-text">There is nothing here</h1>
         <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">  Create an invoice by clicking the</p>
@@ -113,7 +116,8 @@
                  </div>
                  <div class="mt-5">
                    <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]  tracking-[-0.1px]">Client’s Email</label>
-                  <input type="text" name="clientEmail" class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3]" required>
+                  <input type="text" name="clientEmail" id="clientEmail" placeholder="e.g. email@example.com" class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3]" required>
+                  <p id="emailError" class="text-red-500 text-sm mt-1 "></p>
                  </div>
                  <div class="mt-5">
                    <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]  tracking-[-0.1px]">Street Address</label>
@@ -147,10 +151,10 @@
                         <div class="relative mt-3">
                           <select  id="paymentTerms"
                             class="w-full border border-[#DFE3FA] rounded-md p-3 font-bold text-[15px]  leading-3.75 tracking-[-0.25px] dynamic-sub-text  bg-[dynamic-text]focus:outline-none focus:ring-2 focus:ring-[dynamic-text]focus:border-transparent appearance-none " >
-                            <option value="net15">Net 15 Days</option>
-                            <option value="net30" selected>Net 30 Days</option>
-                            <option value="net60">Net 60 Days</option>
-                            <option value="due_on_receipt">Due on Receipt</option>
+                            <option value="net1">Net 1 Days</option>
+                            <option value="net7" selected>Net 7 Days</option>
+                            <option value="net14">Net 14 Days</option>
+                            <option value="net30">Net 30 Days</option>
                           </select>
                           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-indigo-500">
                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
