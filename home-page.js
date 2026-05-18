@@ -13,16 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.querySelector("#create-invoiceModal");
     const openBtn = document.querySelector("#openForm");
     const closeBtn = document.querySelector("#closeForm");
-
     const addItemBtn = document.querySelector("#addItem");
     const itemList = document.querySelector("#itemList");
-
     const invoiceForm = document.querySelector("#invoiceForm");
-
     const emailInput = document.querySelector("#clientEmail");
     const emailError = document.querySelector("#emailError");
     const totalInvoicesText = document.querySelector("#total-invoices");
-
     const invoiceDisplay = document.querySelector("#invoice-display");
 
     let allInvoices = [];
@@ -123,8 +119,80 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    
+    
+    if (invoiceForm) {
+        invoiceForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+ 
+          
+            if (!emailInput.value.includes("@")) {
+                emailError.textContent = "Please enter a valid email";
+                emailInput.classList.add("border-red-500");
+                return;
+            }
 
+            const formData = new FormData(invoiceForm);
 
+            const invoice = {
+                billFrom: {
+                    street: formData.get("fromStreet"),
+                    city: formData.get("city"),
+                    postCode: formData.get("postCode"),
+                    country: formData.get("country")
+                },
+
+                billTo: {
+                    clientName: formData.get("clientName"),
+                    clientEmail: formData.get("clientEmail"),
+                    streetAddress: formData.get("StreetAddress"),
+                    city: formData.get("city1"),
+                    postCode: formData.get("postCode2"),
+                    country: formData.get("country1")
+                },
+
+                invoiceDate: document.getElementById("invoiceDate").value,
+
+                paymentTerms:
+                    document.getElementById("paymentTerms").value,
+
+                projectDescription:
+                    formData.get("projectDescription"),
+
+                items: []
+            };
+
+           
+            document.querySelectorAll(".item-row").forEach((row) => {
+                invoice.items.push({
+                    name: row.querySelector(".item-name").value,
+                    qty: row.querySelector(".item-qty").value,
+                    price: row.querySelector(".item-price").value,
+                    total: row.querySelector(".item-total").innerText
+                });
+            });
+
+          
+            allInvoices.push(invoice);
+
+            console.log("Saved Invoice:", invoice);
+
+          
+            renderInvoices();
+
+            
+            invoiceForm.reset();
+
+           
+            itemList.innerHTML = "";
+            createItemRow();
+
+         
+            modal.classList.add("hidden");
+
+           
+        });
+    }
     function renderInvoices() {
         invoiceDisplay.innerHTML = "";
         
@@ -185,80 +253,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (invoiceForm) {
-        invoiceForm.addEventListener("submit", (e) => {
-            e.preventDefault();
 
-          
-            if (!emailInput.value.includes("@")) {
-                emailError.textContent = "Please enter a valid email";
-                emailInput.classList.add("border-red-500");
-                return;
-            }
-
-            const formData = new FormData(invoiceForm);
-
-            const invoice = {
-                billFrom: {
-                    street: formData.get("fromStreet"),
-                    city: formData.get("city"),
-                    postCode: formData.get("postCode"),
-                    country: formData.get("country")
-                },
-
-                billTo: {
-                    clientName: formData.get("clientName"),
-                    clientEmail: formData.get("clientEmail"),
-                    streetAddress: formData.get("StreetAddress"),
-                    city: formData.get("city1"),
-                    postCode: formData.get("postCode2"),
-                    country: formData.get("country1")
-                },
-
-                invoiceDate: document.getElementById("invoiceDate").value,
-
-                paymentTerms:
-                    document.getElementById("paymentTerms").value,
-
-                projectDescription:
-                    formData.get("projectDescription"),
-
-                items: []
-            };
-
-           
-            document.querySelectorAll(".item-row").forEach((row) => {
-                invoice.items.push({
-                    name: row.querySelector(".item-name").value,
-                    qty: row.querySelector(".item-qty").value,
-                    price: row.querySelector(".item-price").value,
-                    total: row.querySelector(".item-total").innerText
-                });
-            });
-
-          
-            allInvoices.push(invoice);
-
-            console.log("Saved Invoice:", invoice);
-
-            // Render UI
-            renderInvoices();
-
-            // Reset form
-            invoiceForm.reset();
-
-            // Clear item rows
-            itemList.innerHTML = "";
-            createItemRow();
-
-            // Close modal
-            modal.classList.add("hidden");
-
-           
-        });
-    }
-
-    // ================= DATE =================
+  
     const dateInput = document.getElementById("invoiceDate");
     const termsSelect = document.getElementById("paymentTerms");
 
