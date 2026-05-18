@@ -83,7 +83,7 @@
   class="hidden fixed inset-0 z-40 bg-black/40">
   
      <div class="flex h-full">
-       <div class="dynamic-bg   w-full  max-w-xl  p-8 rounded-r-3xl h-full 
+       <div class="dynamic-bg   w-full  max-w-xl  p-8 md:rounded-r-3xl h-full 
             overflow-y-auto  shadow-2xl relative ml-0 
             lg:ml-25.75">
          <h2 class=" dynamic-text font-league font-bold text-2xl leading-8 tracking-[-0.5px]">New Invoice</h2>
@@ -141,35 +141,50 @@
                           <input type="text" name="country" class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3]" required>
                        </div>
                  </div>
-                 <div>
-                   <div class="flex gap-4 w-full ">
-                     <div class="flex-1 mt-5">
-                        <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]">Invoice Date</label>
-                        <div class="relative mt-3">
-                         <input  type="date" id="invoiceDate"
-                         class="w-full dynamic-text  border border-[#7E88C3] rounded-md p-3 font-league font-bold text-[15px] leading-3.75 tracking-[-0.25px] dynamic-bg" >
-                      </div>
-                     </div>
-                     <div class="flex-1 mt-5">
-                        <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]   tracking-[-0.1px]">Payment Terms</label>
-                        <div class="relative mt-3">
-                          <select  id="paymentTerms"
-                            class="w-full border border-[#7E88C3] dynamic-text rounded-md p-3 font-bold text-[15px] border-b-[#7E88C3]  leading-3.75 tracking-[-0.25px] dynamic-bg" >
-                            <option value="net1">Net 1 Days</option>
-                            <option value="net7" selected class="">Net 7 Days</option>
-                            <option value="net14">Net 14 Days</option>
-                            <option value="net30">Net 30 Days</option>
-                          </select>
-                          <!-- <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 ">
-                          <img src="./src/images/Path 2 (1).svg" alt="arrow">
-                        </div> -->
-                      </div>
-                     </div>
+                 <div class="flex flex-col md:flex-row gap-4 w-full ">
+                   <div class="w-full md:flex-1 mt-5">
+                      <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]">Invoice Date</label>
+                      <div class="relative mt-3">
+                       <input  type="date" id="invoiceDate"
+                       class="w-full dynamic-text  border border-[#7E88C3] rounded-lg py-3 px-4 font-league font-bold text-[15px] leading-3.75 tracking-[-0.25px] dynamic-bg focus:border-[#7C5DFA] focus:ring-2 focus:ring-[#7C5DFA]/20 transition-all duration-300" >
+                    </div>
                    </div>
+                   <div class="w-full md:flex-1 mt-5">
+                      <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]   tracking-[-0.1px]">Payment Terms</label>
+                      <div class="relative mt-3">
+                        <select  id="paymentTerms"
+                          class="w-full border border-[#7E88C3] dynamic-text rounded-md p-3 font-bold text-[15px] border-b-[#7E88C3]  leading-3.75 tracking-[-0.25px] dynamic-bg" >
+                          <option value="net1">Net 1 Days</option>
+                          <option value="net7" selected class="">Net 7 Days</option>
+                          <option value="net14">Net 14 Days</option>
+                          <option value="net30">Net 30 Days</option>
+                        </select>
+                        <!-- <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 ">
+                        <img src="./src/images/Path 2 (1).svg" alt="arrow">
+                      </div> -->
+                    </div>
+                   </div>
+                    <div class="w-full md:flex-1 mt-5">
+                      <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]   tracking-[-0.1px]">Payment Status</label>
+                      <div class="relative mt-3">
+                        <select  id="paymentStatus"
+                          class="w-full border border-[#7E88C3] dynamic-text rounded-md p-3 font-bold text-[15px] border-b-[#7E88C3]  leading-3.75 tracking-[-0.25px] dynamic-bg" >
+                          <option value="paid">Paid</option>
+                          <option value="pending" selected class="">Pending</option>
+                          <option value="draft">Draft</option>
+                          
+                        </select>
+                        <!-- <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 ">
+                        <img src="./src/images/Path 2 (1).svg" alt="arrow">
+                      </div> -->
+                    </div>
+                   </div>
+                 </div>
+                 <div>
                    <div class="mt-5">
                     <label class="font-league font-medium text-[13px] leading-3.75 text-[#7E88C3]  tracking-[-0.1px]">Project Description</label>
                     <input type="text" name="fromStreet"  class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3]" required>
-                 </div>
+                   </div>
                  </div>
              </div>
             
