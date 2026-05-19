@@ -230,11 +230,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div> `  : inv.paymentStatus === "pending"   ? `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2">
                      <span class="w-2 h-2 rounded-full bg-[#7733d6]"></span><span class="font-bold text-[12px]">   Pending  </span>
                     </div> `: ""
-                }
+                 }
                 
-                <div class="view-btn cursor-pointer" data-index="${index}">
-                <img src="./src/images/Path 5.png" alt="drop-down">
-                </div> </div> `;
+                 <div class="view-btn cursor-pointer" data-index="${index}">
+                  <img src="./src/images/Path 5.png" alt="drop-down">
+                 </div>
+               </div> `;
                 
                 invoiceDisplay.appendChild(card);
             });
@@ -242,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-  
+    
     const dateInput = document.getElementById("invoiceDate");
     const termsSelect = document.getElementById("paymentTerms");
     const statusSelected=document.querySelector("#paymentStatus")
@@ -269,4 +270,10 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Selected Status:", e.target.value);
         });
     }
+
+//     document.querySelectorAll(".view-btn").forEach((btn) => {
+//         btn.add("click", () => {
+           
+//        })
+//    })
 });
