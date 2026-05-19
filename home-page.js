@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailError = document.querySelector("#emailError");
     const totalInvoicesText = document.querySelector("#total-invoices");
     const invoiceDisplay = document.querySelector("#invoice-display");
+    const homeInvoice = document.querySelector("#home-invoice")
 
     let allInvoices = [];
     let status;
@@ -95,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emailInput.addEventListener("onchange", () => {
             const isValid = emailInput.value.includes("@") && emailInput.value.includes(".");
         
-            if (isValid ) {
+            if (isValid) {
                 emailError.textContent = "";
                 emailInput.classList.remove("border-red-500");
             } else {
@@ -201,9 +202,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const card = document.createElement("div");
 
-             card.className = "dynamic-text dynamic-sub-text dynamic-bg  p-6 rounded-lg shadow-sm flex items-center sm:w-[672px] lg:w-[730px] h-[72px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] font-medium text-[13px] leading-[15px] tracking-[-0.1px]";
+            card.className = "dynamic-text dynamic-sub-text dynamic-bg  p-6 rounded-lg shadow-sm flex items-center sm:w-[672px] lg:w-[730px] h-[72px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] font-medium text-[13px] leading-[15px] tracking-[-0.1px]";
 
-              card.innerHTML = ` <div class="flex items-center px-6 gap-6">
+            card.innerHTML = ` <div class="flex items-center px-6 gap-6">
               <span class="font-bold dynamic-text">
                 #INV-${index + 1}
               </span>
@@ -227,18 +228,83 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="font-bold text-[12px]">  Paid </span>
                     </div> ` : inv.paymentStatus === "draft" ? `
                      <div class="bg-[#f8172a14] text-[#f8172a] px-6 py-3 rounded-md flex items-center gap-2"> <span class="w-2 h-2 rounded-full bg-[#f8172a]"></span> <span class="font-bold text-[12px]"> Draft </span>
-                    </div> `  : inv.paymentStatus === "pending"   ? `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2">
+                    </div> `  : inv.paymentStatus === "pending" ? `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2">
                      <span class="w-2 h-2 rounded-full bg-[#7733d6]"></span><span class="font-bold text-[12px]">   Pending  </span>
                     </div> `: ""
-                 }
+                }
                 
                  <div class="view-btn cursor-pointer" data-index="${index}">
                   <img src="./src/images/Path 5.png" alt="drop-down">
                  </div>
                </div> `;
                 
-                invoiceDisplay.appendChild(card);
-            });
+            invoiceDisplay.appendChild(card);
+
+            const viewBtn = card.querySelector(".view-btn");
+            viewBtn.addEventListener("click", () => {
+
+                homeInvoice.classList.add("hidden");
+                invoiceDisplay.innerHTML = "";
+
+                const view = document.createElement("div");
+                view.className = `dynamic-bg dynamic-text w-full `;
+
+                view.innerHTML = `<button class="back-btn mb-8 text-[#7C5DFA] font-bold flex gap-4" >
+              <img src="./src/images/go-back.svg" alt="go-back"> 
+              <h1 class="text-[#0C0E16] font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px ]">
+               Go Back</h1>
+             </button>
+             
+
+             <div class="dynamic-text dynamic-sub-text bg-[#fffff] p-6 rounded-lg shadow-sm flex items-center sm:w-2xl lg:w-182.5 h-18 justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px]">
+             <div class="flex items-center px-6 gap-6">
+              <span class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] dynamic-text">
+               Status
+              </span>
+
+               <span class="dynamic-sub-text text-[13px]">
+                 ${inv.paymentStatus === "paid" ? `
+                    <div class="bg-[#33d69f14] text-[#33D69F] px-6 py-3 rounded-md flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#33D69F]"></span>
+                        <span class="font-bold text-[12px]">  Paid </span>
+                    </div> ` : inv.paymentStatus === "draft" ? `
+                     <div class="bg-[#f8172a14] text-[#f8172a] px-6 py-3 rounded-md flex items-center gap-2"> <span class="w-2 h-2 rounded-full bg-[#f8172a]"></span> <span class="font-bold text-[12px]"> Draft </span>
+                    </div> `  : inv.paymentStatus === "pending" ? `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2">
+                     <span class="w-2 h-2 rounded-full bg-[#7733d6]"></span><span class="font-bold text-[12px]">   Pending  </span>
+                    </div> `: ""
+                    }
+                </span>
+
+             <button class="dynamic-sub-text text-[#7E88C3] font-['League_Spartan'] font-bold text-[15px] h-12 w-18.25 leading-3.75 bg-[#F9FAFE] items-center rounded-3xl tracking-[-0.25px]">Edit</button>
+             
+
+             <button class=" text-[#ffffff] font-['League_Spartan'] font-bold text-[15px] items-center leading-3.75 bg-[#EC5757]  rounded-3xl tracking-[-0.25px] w-22.25 h-12">Delete</button>
+             
+
+             <button class="text-[#ffffff] h-12 w-32.75 font-['League_Spartan'] items-center font-bold text-[15px] leading-3.75 bg-[#7C5DFA]  rounded-3xl tracking-[-0.25px]"> Mark as Paid</button>
+              </span>
+
+
+
+
+              </div>
+             
+             
+             </div>
+             <div></div>
+            `;
+                invoiceDisplay.appendChild(view);
+                const backBtn = view.querySelector(".back-btn");
+
+                backBtn.addEventListener("click", () => {
+                    homeInvoice.classList.remove("hidden");
+                    renderInvoices();
+                });
+               
+
+
+            })
+        });
 
     }
 
@@ -246,7 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const dateInput = document.getElementById("invoiceDate");
     const termsSelect = document.getElementById("paymentTerms");
-    const statusSelected=document.querySelector("#paymentStatus")
+    const statusSelected = document.querySelector("#paymentStatus")
 
     if (dateInput) {
         const today = new Date().toISOString().split("T")[0];
@@ -271,9 +337,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-//     document.querySelectorAll(".view-btn").forEach((btn) => {
-//         btn.add("click", () => {
-           
-//        })
-//    })
+   
 });
