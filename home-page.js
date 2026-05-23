@@ -1,279 +1,399 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const themeSwitch = document.querySelector("#theme-switcher");
-    const body = document.body;
+  const themeSwitch = document.querySelector("#theme-switcher");
+  const body = document.body;
 
-  
-    if (themeSwitch) {
-        themeSwitch.addEventListener("click", () => {
-            body.classList.toggle("dark-theme");
+  if (themeSwitch) {
+    themeSwitch.addEventListener("click", () => {
+      body.classList.toggle("dark-theme");
+    });
+  }
+
+  const modal = document.querySelector("#create-invoiceModal");
+  const openBtn = document.querySelector("#openForm");
+  const closeBtn = document.querySelector("#closeForm");
+  const addItemBtn = document.querySelector("#addItem");
+  const itemList = document.querySelector("#itemList");
+  const invoiceForm = document.querySelector("#invoiceForm");
+  const emailInput = document.querySelector("#clientEmail");
+  const emailError = document.querySelector("#emailError");
+  const totalInvoicesText = document.querySelector("#total-invoices");
+  const invoiceDisplay = document.querySelector("#invoice-display");
+  const homeInvoice = document.querySelector("#home-invoice");
+
+  let allInvoices = [];
+  let status;
+
+  if (openBtn && modal) {
+    openBtn.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+    });
+  }
+
+  if (closeBtn && modal) {
+    closeBtn.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+  }
+
+  function createItemRow() {
+    const item = document.createElement("div");
+    item.className = "grid grid-cols-12 gap-4 items-center mb-4 item-row";
+
+    item.innerHTML = `
+      <div class="col-span-5">
+          <input type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
+      </div>
+      <div class="col-span-2">
+          <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty" required >
+      </div>
+      <div class="col-span-2">
+          <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price" required >
+      </div>
+      <div class="col-span-2 font-bold dynamic-text item-total"> 0.00 </div>
+      <div class="col-span-1 text-center">
+          <img src="./src/images/delete.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500">
+      </div>
+    `;
+
+    itemList.appendChild(item);
+
+    const qtyInput = item.querySelector(".item-qty");
+    const priceInput = item.querySelector(".item-price");
+    const totalDisplay = item.querySelector(".item-total");
+
+    function updateTotal() {
+      const qty = Number(qtyInput.value) || 0;
+      const price = Number(priceInput.value) || 0;
+      totalDisplay.innerText = (qty * price).toFixed(2);
+    }
+
+    qtyInput.addEventListener("input", updateTotal);
+    priceInput.addEventListener("input", updateTotal);
+
+    updateTotal();
+
+    item.querySelector(".delete-item").addEventListener("click", () => {
+      item.remove();
+    });
+  }
+
+  if (addItemBtn) {
+    addItemBtn.addEventListener("click", createItemRow);
+  }
+
+  if (emailInput) {
+    emailInput.addEventListener("change", () => {
+      const isValid =
+        emailInput.value.includes("@") && emailInput.value.includes(".");
+      if (isValid) {
+        emailError.textContent = "";
+        emailInput.classList.remove("border-red-500");
+      } else {
+        emailError.textContent = "Please enter a valid email";
+        emailInput.classList.add("border-red-500");
+      }
+    });
+  }
+
+  if (invoiceForm) {
+    invoiceForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(invoiceForm);
+
+      const invoice = {
+        billFrom: {
+          street: formData.get("fromStreet"),
+          city: formData.get("city"),
+          postCode: formData.get("postCode"),
+          country: formData.get("country"),
+        },
+        billTo: {
+          clientName: formData.get("clientName"),
+          clientEmail: formData.get("clientEmail"),
+          streetAddress: formData.get("StreetAddress"),
+          city: formData.get("city1"),
+          postCode: formData.get("postCode2"),
+          country: formData.get("country1"),
+        },
+        invoiceDate: formData.get("invoiceDate") || (document.getElementById("invoiceDate") ? document.getElementById("invoiceDate").value : ""),
+        paymentTerms: formData.get("paymentTerms") || (document.getElementById("paymentTerms") ? document.getElementById("paymentTerms").value : ""),
+        paymentStatus: formData.get("paymentStatus") || (document.querySelector("#paymentStatus") ? document.querySelector("#paymentStatus").value : "pending"),
+        projectDescription: formData.get("projectDescription"),
+        items: [],
+      };
+
+      document.querySelectorAll(".item-row").forEach((row) => {
+        invoice.items.push({
+          name: row.querySelector(".item-name").value,
+          qty: row.querySelector(".item-qty").value,
+          price: row.querySelector(".item-price").value,
+          total: row.querySelector(".item-total").innerText,
         });
+      });
+
+      allInvoices.push(invoice);
+      status = invoice;
+
+      renderInvoices();
+      invoiceForm.reset();
+      itemList.innerHTML = "";
+      createItemRow();
+      modal.classList.add("hidden");
+    });
+  }
+
+  function renderInvoices() {
+    invoiceDisplay.innerHTML = "";
+
+    if (allInvoices.length === 0) {
+      totalInvoicesText.textContent = "No invoices available";
+    } else if (allInvoices.length === 1) {
+      totalInvoicesText.textContent = "1 invoice available";
+    } else {
+      totalInvoicesText.textContent = `There are ${allInvoices.length} total invoices`;
     }
 
- 
-    const modal = document.querySelector("#create-invoiceModal");
-    const openBtn = document.querySelector("#openForm");
-    const closeBtn = document.querySelector("#closeForm");
-    const addItemBtn = document.querySelector("#addItem");
-    const itemList = document.querySelector("#itemList");
-    const invoiceForm = document.querySelector("#invoiceForm");
-    const emailInput = document.querySelector("#clientEmail");
-    const emailError = document.querySelector("#emailError");
-    const totalInvoicesText = document.querySelector("#total-invoices");
-    const invoiceDisplay = document.querySelector("#invoice-display");
-
-    let allInvoices = [];
-    let status;
-
- 
-    if (openBtn && modal) {
-        openBtn.addEventListener("click", () => {
-            modal.classList.remove("hidden");
-        });
+    if (allInvoices.length === 0) {
+      invoiceDisplay.innerHTML = `
+        <div class="flex flex-col items-center justify-center lg:mt-4 mt-12">
+          <img src="./src/images/Email campaign_Flatline.svg" alt="email" class="lg:mt-8" />
+          <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 lg:mt-4 dynamic-text">There is nothing here</h1>
+          <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">Create an invoice by clicking the</p>
+          <p class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]">New Invoice button and get started</p>
+        </div>
+      `;
+      return;
     }
 
-    if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => {
-            modal.classList.add("hidden");
-        });
-    }
+    allInvoices.forEach((inv, index) => {
+      const totalAmount = inv.items
+        .reduce((sum, item) => sum + Number(item.total), 0)
+        .toFixed(2);
 
+      const card = document.createElement("div");
+      card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center w-full max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
 
-    function createItemRow() {
-        const item = document.createElement("div");
-
-        item.className = "grid grid-cols-12 gap-4 items-center mb-4 item-row";
-
-        item.innerHTML = ` <div class="col-span-5">
-                <input   type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
-            </div>
-
-            <div class="col-span-2">
-                <input  type="text" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty" required >
-            </div>
-
-            <div class="col-span-2">
-                <input type="text"class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price" required >
-            </div>
-
-            <div class="col-span-2 font-bold dynamic-text item-total"> 0.00 </div>
-
-            <div class="col-span-1 text-center">
-                <button type="button" class="delete-item text-gray-400 hover:text-red-500">
-                 🗑️
-                </button>
-            </div> `;
-
-        itemList.appendChild(item);
-
-        const qtyInput = item.querySelector(".item-qty");
-        const priceInput = item.querySelector(".item-price");
-        const totalDisplay = item.querySelector(".item-total");
-
-        function updateTotal() {
-            const qty = Number(qtyInput.value) || 0;
-            const price = Number(priceInput.value) || 0;
-
-            totalDisplay.innerText = (qty * price).toFixed(2);
-        }
-
-        qtyInput.addEventListener("input", updateTotal);
-        priceInput.addEventListener("input", updateTotal);
-
-        updateTotal();
-
-        item.querySelector(".delete-item").addEventListener("click", () => {
-            item.remove();
-        });
-    }
-
-    if (addItemBtn) {
-        addItemBtn.addEventListener("click", createItemRow);
-    }
-
-  
-    if (emailInput) {
-        emailInput.addEventListener("onchange", () => {
-            const isValid = emailInput.value.includes("@") && emailInput.value.includes(".");
-        
-            if (isValid ) {
-                emailError.textContent = "";
-                emailInput.classList.remove("border-red-500");
-            } else {
-                emailError.textContent = "Please enter a valid email";
-                emailInput.classList.add("border-red-500");
-            }
-        });
-    }
-    
-    
-    if (invoiceForm) {
-        invoiceForm.addEventListener("submit", (e) => {
-            e.preventDefault();
- 
-          
-            // if (!emailInput.value.includes("@")) {
-            //     emailError.textContent = "Please enter a valid email";
-            //     emailInput.classList.add("border-red-500");
-            //     return;
-            // }
-
-            const formData = new FormData(invoiceForm);
-
-            const invoice = {
-                billFrom: {
-                    street: formData.get("fromStreet"),
-                    city: formData.get("city"),
-                    postCode: formData.get("postCode"),
-                    country: formData.get("country")
-                },
-
-                billTo: {
-                    clientName: formData.get("clientName"),
-                    clientEmail: formData.get("clientEmail"),
-                    streetAddress: formData.get("StreetAddress"),
-                    city: formData.get("city1"),
-                    postCode: formData.get("postCode2"),
-                    country: formData.get("country1")
-                },
-
-                invoiceDate: document.getElementById("invoiceDate").value,
-
-                paymentTerms:
-                    document.getElementById("paymentTerms").value,
-                paymentStatus: document.querySelector("#paymentStatus").value,
-                
-
-                projectDescription:
-                    formData.get("projectDescription"),
-
-                items: []
-            };
-            
-           
-            document.querySelectorAll(".item-row").forEach((row) => {
-                invoice.items.push({
-                    name: row.querySelector(".item-name").value,
-                    qty: row.querySelector(".item-qty").value,
-                    price: row.querySelector(".item-price").value,
-                    total: row.querySelector(".item-total").innerText
-                });
-            });
-
-          
-            allInvoices.push(invoice);
-            status = invoice;
-        
-            renderInvoices();
- 
-            invoiceForm.reset();
-
-            itemList.innerHTML = "";
-            createItemRow();
-
-            modal.classList.add("hidden");
-
-           
-        });
-    }
-    function renderInvoices() {
-        invoiceDisplay.innerHTML = "";
-        
-        if (allInvoices.length === 0) {
-            totalInvoicesText.textContent = "No invoices available";
-        } else if (allInvoices.length === 1) {
-            totalInvoicesText.textContent = "1 invoice available";
-        } else {
-            totalInvoicesText.textContent = `There are ${allInvoices.length} total invoices `;
-        }
-        if (allInvoices.length === 0) {
-            invoiceDisplay.innerHTML = `
-                <p class="text-center dynamic-sub-text">
-                    No invoices available
-                </p>
-            `;
-            return;
-        }
-
-        allInvoices.forEach((inv, index) => {
-            const totalAmount = inv.items
-                .reduce((sum, item) => sum + Number(item.total), 0)
-                .toFixed(2);
-
-            const card = document.createElement("div");
-
-             card.className = "dynamic-text dynamic-sub-text dynamic-bg  p-6 rounded-lg shadow-sm flex items-center sm:w-[672px] lg:w-[730px] h-[72px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] font-medium text-[13px] leading-[15px] tracking-[-0.1px]";
-
-              card.innerHTML = ` <div class="flex items-center px-6 gap-6">
-              <span class="font-bold dynamic-text">
+      card.innerHTML = `
+        <div class="grid grid-cols-2 w-full gap-y-6 md:hidden">
+            <div class="text-left font-bold dynamic-text text-[14px]">
                 #INV-${index + 1}
-              </span>
+            </div>
+            <div class="text-right dynamic-sub-text text-[13px] font-medium text-[#858BB2]">
+                ${inv.billTo.clientName}
+            </div>
 
-               <span class="dynamic-sub-text text-[13px]">
-                 Due ${inv.invoiceDate}
-                </span>
+            <div class="flex flex-col gap-2 justify-end">
+                <span class="dynamic-sub-text text-[13px]">Due ${inv.invoiceDate}</span>
+                <span class="dynamic-text font-bold text-[16px] tracking-[-0.8px]">£ ${totalAmount}</span>
+            </div>
+            <div class="flex items-center justify-end">
+                ${inv.paymentStatus === "paid"
+          ? `<div class="bg-[#33d69f14] text-[#33D69F] w-26 h-10 rounded-md flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-[#33D69F]"></span><span class="font-bold text-[12px]">Paid</span></div>`
+          : inv.paymentStatus === "draft"
+            ? `<div class="bg-[#f8172a14] text-[#f8172a] w-26 h-10 rounded-md flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-[#f8172a]"></span><span class="font-bold text-[12px]">Draft</span></div>`
+            : `<div class="bg-[#FF8F0014] text-[#FF8F00] w-26 h-10 rounded-md flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FF8F00]"></span><span class="font-bold text-[12px]">Pending</span></div>`
+        }
+            </div>
+        </div>
 
-              <span class="dynamic-sub-text text-[13px]">
-                 ${inv.billTo.clientName}
-               </span>  </div>
+        <div class="hidden md:flex items-center w-full justify-between">
+            <div class="flex items-center px-6 gap-6">
+              <span class="font-bold dynamic-text">#INV-${index + 1}</span>
+              <span class="dynamic-sub-text text-[13px]">Due ${inv.invoiceDate}</span>
+              <span class="dynamic-sub-text text-[13px]">${inv.billTo.clientName}</span>
+            </div>
+            <div class="flex items-center gap-8">
+              <span class="dynamic-text font-bold text-[16px]">£ ${totalAmount}</span>
+              ${inv.paymentStatus === "paid"
+          ? `<div class="bg-[#33d69f14] text-[#33D69F] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#33D69F]"></span><span class="font-bold text-[12px]">Paid</span></div>`
+          : inv.paymentStatus === "draft"
+            ? `<div class="bg-[#f8172a14] text-[#f8172a] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#f8172a]"></span><span class="font-bold text-[12px]">Draft</span></div>`
+            : `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#7733d6]"></span><span class="font-bold text-[12px]">Pending</span></div>`
+        }
+              <div class="view-btn cursor-pointer" data-index="${index}">
+                <img src="./src/images/Path 5.png" alt="drop-down">
+              </div>
+            </div>
+        </div>
+      `;
 
-             <div class="flex items-center gap-8">
+      invoiceDisplay.appendChild(card);
 
-                <span class="dynamic-text font-bold text-[16px]">
-                  £ ${totalAmount}
-               </span>
-                 ${inv.paymentStatus === "paid" ? `
-                    <div class="bg-[#33d69f14] text-[#33D69F] px-6 py-3 rounded-md flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#33D69F]"></span>
-                        <span class="font-bold text-[12px]">  Paid </span>
-                    </div> ` : inv.paymentStatus === "draft" ? `
-                     <div class="bg-[#f8172a14] text-[#f8172a] px-6 py-3 rounded-md flex items-center gap-2"> <span class="w-2 h-2 rounded-full bg-[#f8172a]"></span> <span class="font-bold text-[12px]"> Draft </span>
-                    </div> `  : inv.paymentStatus === "pending"   ? `<div class="bg-[#7733d614] text-[#7733d6] px-6 py-3 rounded-md flex items-center gap-2">
-                     <span class="w-2 h-2 rounded-full bg-[#7733d6]"></span><span class="font-bold text-[12px]">   Pending  </span>
-                    </div> `: ""
-                 }
-                
-                 <div class="view-btn cursor-pointer" data-index="${index}">
-                  <img src="./src/images/Path 5.png" alt="drop-down">
-                 </div>
-               </div> `;
-                
-                invoiceDisplay.appendChild(card);
-            });
+      const openInvoiceDetails = () => {
+        homeInvoice.classList.add("hidden");
+        invoiceDisplay.innerHTML = "";
 
-    }
+        const view = document.createElement("div");
+        view.className = `dynamic-bg dynamic-text w-full max-w-[730px] mx-auto`;
 
+        view.innerHTML = `
+          <div class="w-full h-full px-4 sm:px-6 lg:px-0 pb-24 md:pb-10">
+              <button class="back-btn mb-6 md:mb-8 text-[#7C5DFA] hover:text-[#9277FF] font-bold flex gap-4 items-center transition-colors">
+                  <img src="./src/images/go-back.svg" alt="go-back">
+                  <h1 class="font-['League_Spartan'] font-bold text-[15px] leading-5 tracking-[-0.25px]">Go Back</h1>
+              </button>
 
-    
-    const dateInput = document.getElementById("invoiceDate");
-    const termsSelect = document.getElementById("paymentTerms");
-    const statusSelected=document.querySelector("#paymentStatus")
+              <div class="dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-row items-center w-full justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px]">
+                  <div class="flex items-center justify-between w-full md:w-auto gap-5">
+                      <span class="text-[#858BB2] text-[13px]">Status</span>
+                      ${inv.paymentStatus === "paid"
+            ? `<div class="bg-[#33d69f14] text-[#33D69F] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#33D69F]"></span><span class="font-bold text-[12px]">Paid</span></div>`
+            : inv.paymentStatus === "draft"
+              ? `<div class="bg-[#f8172a14] text-[#f8172a] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#f8172a]"></span><span class="font-bold text-[12px]">Draft</span></div>`
+              : `<div class="bg-[#FF8F0014] text-[#FF8F00] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FF8F00]"></span><span class="font-bold text-[12px]">Pending</span></div>`
+          }
+                  </div>
 
-    if (dateInput) {
-        const today = new Date().toISOString().split("T")[0];
-        dateInput.value = today;
-    }
+                  <div class="hidden md:flex items-center gap-2 sm:gap-3">
+                      <button id="edit-invoice" class="bg-[#F9FAFE] text-[#7E88C3] hover:bg-[#DFE3FA] px-6 h-12 rounded-full font-bold cursor-pointer transition-colors">Edit</button>
+                      <button id="delete-invoice" class="bg-[#EC5757] text-white hover:bg-[#FF9797] px-6 h-12 rounded-full font-bold cursor-pointer transition-colors">Delete</button>
+                      <button class="bg-[#7C5DFA] text-white hover:bg-[#9277FF] px-6 h-12 rounded-full font-bold cursor-pointer transition-colors">Mark as Paid</button>
+                  </div>
+              </div>
 
-    if (dateInput) {
-        dateInput.addEventListener("change", (e) => {
-            console.log("New Invoice Date:", e.target.value);
+              <div class="dynamic-card dynamic-text dynamic-sub-text p-6 md:p-8 rounded-lg shadow-sm w-full border border-transparent mb-4 font-['League_Spartan'] font-medium text-[13px] tracking-[-0.1px]">
+                  <div class="flex flex-col md:flex-row justify-between gap-6 md:gap-8 mb-8">
+                      <div>
+                          <h1 class="font-bold text-[16px] md:text-[20px] dynamic-text">#INV-${index + 1}</h1>
+                          <p class="text-[#7E88C3] dynamic-sub-text text-[13px] mt-1">${inv.projectDescription}</p>
+                      </div>
+                      <div class="text-left md:text-right text-[#7E88C3] dynamic-sub-text text-[13px] leading-5">
+                          <p>${inv.billFrom.street}</p>
+                          <p>${inv.billFrom.city}</p>
+                          <p>${inv.billFrom.postCode}</p>
+                          <p>${inv.billFrom.country}</p>
+                      </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 mb-10">
+                      <div class="flex flex-col justify-between gap-4">
+                          <div>
+                              <p class="text-[#7E88C3] text-[13px] mb-2">Invoice Date</p>
+                              <h2 class="font-bold text-[15px] dynamic-text">${inv.invoiceDate}</h2>
+                          </div>
+                          <div>
+                              <p class="text-[#7E88C3] text-[13px] mb-2">Payment Due</p>
+                              <h2 class="font-bold text-[15px] dynamic-text">${inv.paymentTerms}</h2>
+                          </div>
+                      </div>
+
+                      <div>
+                          <p class="text-[#7E88C3] text-[13px] mb-2">Bill To</p>
+                          <h2 class="font-bold text-[15px] dynamic-text mb-2">${inv.billTo.clientName}</h2>
+                          <div class="text-[#7E88C3] dynamic-sub-text text-[13px] leading-5">
+                              <p>${inv.billTo.streetAddress}</p>
+                              <p>${inv.billTo.city}</p>
+                              <p>${inv.billTo.postCode}</p>
+                              <p>${inv.billTo.country}</p>
+                          </div>
+                      </div>
+
+                      <div class="col-span-2 md:col-span-2">
+                          <p class="text-[#7E88C3] text-[13px] mb-2">Sent to</p>
+                          <h2 class="font-bold text-[15px] dynamic-text break-all">${inv.billTo.clientEmail}</h2>
+                      </div>
+                  </div>
+
+                  <div class="dynamic-secondary rounded-t-lg p-6 mt-6">
+                      <div class="hidden md:grid grid-cols-4 text-[#7E88C3] text-[13px] mb-6">
+                          <div>Item Name</div>
+                          <div class="text-center">QTY.</div>
+                          <div class="text-right">Price</div>
+                          <div class="text-right">Total</div>
+                      </div>
+
+                      <div class="flex flex-col gap-6">
+                          ${inv.items.map(item => `
+                              <div class="grid grid-cols-2 md:grid-cols-4 items-center justify-between font-bold">
+                                  <div>
+                                      <p class="dynamic-text text-[15px]">${item.name}</p>
+                                      <p class="md:hidden text-[#7E88C3] text-[13px] mt-2">
+                                          ${item.qty} x £ ${Number(item.price).toFixed(2)}
+                                      </p>
+                                  </div>
+                                  <div class="hidden md:block text-center text-[#7E88C3] text-[15px]">${item.qty}</div>
+                                  <div class="hidden md:block text-right text-[#7E88C3] text-[15px]">£ ${Number(item.price).toFixed(2)}</div>
+                                  <div class="text-right dynamic-text text-[15px]">£ ${Number(item.total).toFixed(2)}</div>
+                              </div>
+                          `).join("")}
+                      </div>
+                  </div>
+
+                  <div class="dynamic-view text-white p-6 rounded-b-lg flex items-center justify-between">
+                      <p class="text-[13px] font-medium">Amount Due</p>
+                      <h1 class="text-[20px] md:text-[24px] font-bold">£ ${totalAmount}</h1>
+                  </div>
+              </div>
+          </div>
+
+          <div class="fixed bottom-0 left-0 right-0 p-4 dynamic-card flex items-center justify-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden z-30">
+              <button id="edit-invoice-mobile" class="flex-1 bg-[#F9FAFE] text-[#7E88C3] h-12 rounded-full font-bold cursor-pointer text-center text-[14px]">Edit</button>
+              <button id="delete-invoice-mobile" class="flex-1 bg-[#EC5757] text-white h-12 rounded-full font-bold cursor-pointer text-center text-[14px]">Delete</button>
+              <button class="flex-1 bg-[#7C5DFA] text-white h-12 rounded-full font-bold cursor-pointer text-center text-[14px]">Mark as Paid</button>
+          </div>
+        `;
+
+        invoiceDisplay.appendChild(view);
+
+        const backBtn = view.querySelector(".back-btn");
+        backBtn.addEventListener("click", () => {
+          homeInvoice.classList.remove("hidden");
+          renderInvoices();
         });
-    }
 
-    if (termsSelect) {
-        termsSelect.addEventListener("change", (e) => {
-            console.log("Selected Term:", e.target.value);
+        // Setup Confirm Deletion Modal Structure inside the DOM
+        const confirmationModal = document.createElement("div");
+        confirmationModal.id = "delete-confirmation-modal";
+        confirmationModal.className = "fixed inset-0 bg-black/50 flex items-center justify-center p-4 hidden z-50 transition-opacity";
+        confirmationModal.innerHTML = `
+    <div class="bg-white dark:bg-[#1E2139] p-8 rounded-lg max-w-120 w-full font-['League_Spartan'] shadow-md">
+      <h1 class="text-[24px] font-bold text-[#0C0E16] dark:text-white mb-3">Confirm Deletion</h1>
+      <p id="delete-modal-text" class="text-[13px] font-medium text-[#888EB0] dark:text-[#DFE3FA] leading-5 mb-6">
+        Are you sure you want to delete invoice? This action cannot be undone.
+      </p>
+      <div class="flex justify-end gap-2">
+        <button id="cancel-delete-btn" class="bg-[#F9FAFE] dark:bg-[#252945] text-[#7E88C3] dark:text-[#DFE3FA] hover:bg-[#DFE3FA] px-6 h-12 rounded-full font-bold transition-colors cursor-pointer">Cancel</button>
+        <button id="confirm-delete-btn" class="bg-[#EC5757] text-white hover:bg-[#FF9797] px-6 h-12 rounded-full font-bold transition-colors cursor-pointer">Delete</button>
+      </div>
+    </div>
+  `;
+        document.body.appendChild(confirmationModal);
+
+        const cancelDeleteBtn = confirmationModal.querySelector("#cancel-delete-btn");
+        let confirmDeleteBtn = confirmationModal.querySelector("#confirm-delete-btn");
+        const deleteModalText = confirmationModal.querySelector("#delete-modal-text");
+
+        cancelDeleteBtn.addEventListener("click", () => {
+          confirmationModal.classList.add("hidden");
         });
-    }
 
-    if (statusSelected) {
-        statusSelected.addEventListener("change", (e) => {
-            console.log("Selected Status:", e.target.value);
-        });
-    }
+        // Intercept action workflow with the overlay confirmation message box instead of immediate reduction
+        const triggerDeleteConfirmation = () => {
+          deleteModalText.textContent = `Are you sure you want to delete invoice #INV-${index + 1}? This action cannot be undone.`;
+          confirmationModal.classList.remove("hidden");
 
-//     document.querySelectorAll(".view-btn").forEach((btn) => {
-//         btn.add("click", () => {
-           
-//        })
-//    })
+          // Clean clone technique resets previous reference bindings cleanly
+          const newConfirmBtn = confirmDeleteBtn.cloneNode(true);
+          confirmDeleteBtn.parentNode.replaceChild(newConfirmBtn, confirmDeleteBtn);
+          confirmDeleteBtn = newConfirmBtn; // update reference variable
+
+          confirmDeleteBtn.addEventListener("click", () => {
+            allInvoices.splice(index, 1);
+            confirmationModal.classList.add("hidden");
+            homeInvoice.classList.remove("hidden");
+            renderInvoices();
+          });
+        };
+
+        const deleteBtn = view.querySelector("#delete-invoice");
+        if (deleteBtn) deleteBtn.addEventListener("click", triggerDeleteConfirmation);
+
+        const deleteBtnMobile = view.querySelector("#delete-invoice-mobile");
+        if (deleteBtnMobile) deleteBtnMobile.addEventListener("click", triggerDeleteConfirmation);
+      };
+
+      card.addEventListener("click", openInvoiceDetails);
+    });
+  }
 });
