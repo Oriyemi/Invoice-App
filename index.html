@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="./src/images/Combined Shape (1).svg"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>invoice</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght=700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-main: #f8f8fb;
+        --bg-card: #ffffff;
+        --bg-secondary: #f9fafe;
+        --bg-view: #373b53;
+        --text-heading: #0c0e16;
+        --text-sub: #888eb0;
+      }
+      body.dark-theme {
+        --bg-main: #141625;
+        --bg-card: #1e2139;
+        --bg-secondary: #252945;
+        --bg-view: #0c0e16;
+        --text-heading: #ffffff;
+        --text-sub: #dfe3fa;
+      }
+      .dynamic-bg {
+        background-color: var(--bg-main);
+        transition: all 0.3s ease;
+      }
+      .dynamic-card {
+        background-color: var(--bg-card);
+        transition: all 0.3s ease;
+      }
+      .dynamic-secondary {
+        background-color: var(--bg-secondary);
+        transition: all 0.3s ease;
+      }
+      .dynamic-view {
+        background-color: var(--bg-view);
+        transition: all 0.3s ease;
+      }
+      .dynamic-text {
+        color: var(--text-heading);
+        transition: all 0.3s ease;
+      }
+      .dynamic-sub-text {
+        color: var(--text-sub);
+        transition: all 0.3s ease;
+      }
+      input[type="date"] {
+       color-scheme: light;
+      }
+      body.dark-theme input[type="date"] {
+        color-scheme: dark;
+      }
+      body.dark-theme input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body class="dynamic-bg">
+    <section class="h-fit">
+      <div class="flex flex-col lg:flex-row lg:h-screen min-h-screen">
+        <!-- Sidebar Navbar -->
+        <div
+          class="flex flex-row lg:flex-col w-full lg:w-25.75 h-fit lg:h-full bg-[#373B53] lg:rounded-tr-[20px] lg:rounded-br-[20px] z-50"
+        >
+          <div
+            class="relative w-18 h-20 lg:w-26 lg:h-25.75 bg-[#7C5DFA] rounded-r-[20px] overflow-hidden"
+          >
+            <div
+              class="absolute bottom-0 left-0 w-full h-[50%] bg-[#9277FF] rounded-tl-[20px]"
+            ></div>
+            <div
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            >
+              <img
+                src="./src/images/Combined Shape (1).svg"
+                alt="logo"
+                class="w-7 lg:w-10"
+              />
+            </div>
+          </div>
+          <div
+            class="flex flex-row lg:flex-col items-center ml-auto lg:ml-0 lg:mt-auto gap-6 pr-6 lg:pr-0 lg:pb-6"
+          >
+            <img
+              src="./src/images/Path.svg"
+              alt="moon"
+              id="theme-switcher"
+              class="cursor-pointer w-5"
+            />
+            <div class="w-px h-8 lg:h-px lg:w-full bg-[#494E6E]"></div>
+            <img
+              src="./src/images/Oval.svg"
+              alt="man"
+              class="w-8 h-8 lg:w-10 lg:h-10"
+            />
+          </div>
+        </div>
+
+        <!-- Main Content View Area -->
+        <div
+          class="dynamic-bg flex-1 py-8 lg:py-3 px-6 relative lg:h-full overflow-y-auto"
+        >
+          <div class="max-w-182.5 max-h-fit mx-auto w-full lg:mt-10">
+            <!-- Header section -->
+            <div
+              id="home-invoice"
+              class="flex justify-between items-center w-full max-w-182.5"
+            >
+              <div>
+                <h1
+                  class="dynamic-text font-['League_Spartan'] font-bold text-[24px] lg:text-[36px] tracking-[-1.13px]"
+                >
+                  Invoices
+                </h1>
+                <p
+                  id="total-invoices"
+                  class="dynamic-sub-text font-['League_Spartan'] font-medium text-[13px] mt-1"
+                >
+                  No invoices
+                </p>
+              </div>
+              <div class="flex items-center gap-4 lg:gap-6">
+                <!-- FILTER DROPDOWN -->
+                <div class="relative">
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    id="filter-toggle"
+                  >
+                    <p
+                      class="dynamic-text font-['League_Spartan'] font-bold text-[15px] tracking-[-0.25px]"
+                    >
+                      Filter <span class="hidden sm:inline">by status</span>
+                    </p>
+
+                    <img
+                      src="./src/images/Path 2.png"
+                      alt="drop-down"
+                      class="w-2 h-1 transition-all duration-300"
+                      id="drop-down"
+                    />
+                  </div>
+
+                  <!-- DROPDOWN MENU -->
+                  <div
+                    id="filter-menu"
+                    class="hidden absolute top-10 right-0 dynamic-card shadow-lg rounded-lg p-6 w-48 z-50"
+                  >
+                    <label class="flex items-center gap-3 mb-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        value="draft"
+                        class="filter-checkbox accent-[#7C5DFA]"
+                      />
+
+                      <span class="dynamic-text font-bold"> Draft </span>
+                    </label>
+
+                    <label class="flex items-center gap-3 mb-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        value="pending"
+                        class="filter-checkbox accent-[#7C5DFA]"
+                      />
+
+                      <span class="dynamic-text font-bold"> Pending </span>
+                    </label>
+
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        value="paid"
+                        class="filter-checkbox accent-[#7C5DFA]"
+                      />
+
+                      <span class="dynamic-text font-bold"> Paid </span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- NEW INVOICE BUTTON -->
+                <button
+                  id="openFormBtn"
+                  class="bg-[#7C5DFA] hover:bg-[#9277FF] h-12 px-2 sm:px-4 rounded-full flex items-center gap-2 cursor-pointer transition-all duration-300"
+                >
+                  <div
+                    class="bg-white rounded-full size-8 flex items-center justify-center"
+                    id="openForm"
+                  >
+                    <img src="./src/images/+.svg" alt="plus" class="w-3 h-3" />
+                  </div>
+
+                  <span
+                    class="text-white font-['League_Spartan'] font-bold text-[15px] tracking-[-0.25px] pr-2"
+                  >
+                    New <span class="hidden sm:inline">Invoice</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty  Area -->
+            <div
+              id="invoice-display"
+              class="flex flex-col items-center justify-center lg:mt-4 mt-12"
+            >
+              <img
+                src="./src/images/Email campaign_Flatline.svg"
+                alt="email"
+                class="lg:mt-8"
+              />
+              <h1
+                class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 lg:mt-4 dynamic-text"
+              >
+                There is nothing here
+              </h1>
+              <p
+                class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5"
+              >
+                Create an invoice by clicking the
+              </p>
+              <p
+                class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]"
+              >
+                New Invoice button and get started
+              </p>
+            </div>
+          </div>
+
+          <!-- Create Invoice Modal Panel -->
+          <div id="create-invoiceModal" class="hidden absolute inset-0 z-40">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div
+              class="dynamic-bg absolute top-0 left-0 w-full max-w-xl h-full overflow-y-auto shadow-2xl p-8 md:rounded-r-3xl z-50"
+            >
+              <h2
+                id="invoice-Id"
+                class="dynamic-text font-['League_Spartan'] font-bold text-2xl leading-8 tracking-[-0.5px]"
+              >
+                New Invoice
+              </h2>
+
+              <form id="invoiceForm">
+                <!-- Bill From -->
+                <div class="mb-8">
+                  <p
+                    class="text-[#7C5DFA] font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px] mt-10"
+                  >
+                    Bill From
+                  </p>
+                  <div class="mt-5">
+                    <label
+                      class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                      >Street Address</label
+                    >
+                    <input
+                      type="text"
+                      name="fromStreet"
+                      class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                      required
+                    />
+                  </div>
+                  <div class="flex gap-4 w-full">
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] mt-1 tracking-[-0.1px]"
+                        >City</label
+                      >
+                      <input
+                        type="text"
+                        name="city"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px] mt-1"
+                        >Post Code</label
+                      >
+                      <input
+                        type="text"
+                        name="postCode"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px] mt-1"
+                        >Country</label
+                      >
+                      <input
+                        type="text"
+                        name="country"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bill To -->
+                <div class="mb-8">
+                  <p
+                    class="text-[#7C5DFA] font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px] mt-10"
+                  >
+                    Bill To
+                  </p>
+                  <div class="mt-5">
+                    <label
+                      class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                      >Client’s Name</label
+                    >
+                    <input
+                      type="text"
+                      name="clientName"
+                      class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                      required
+                    />
+                  </div>
+                  <div class="mt-5">
+                    <label
+                      class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                      >Client’s Email</label
+                    >
+                    <input
+                      type="email"
+                      name="clientEmail"
+                      id="clientEmail"
+                      placeholder="e.g. email@example.com"
+                      class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                      required
+                    />
+                    <p id="emailError" class="text-red-500 text-sm mt-1"></p>
+                  </div>
+                  <div class="mt-5">
+                    <label
+                      class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                      >Street Address</label
+                    >
+                    <input
+                      type="text"
+                      name="StreetAddress"
+                      class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                      required
+                    />
+                  </div>
+                  <div class="flex gap-4 w-full">
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] mt-1 tracking-[-0.1px]"
+                        >City</label
+                      >
+                      <input
+                        type="text"
+                        name="city1"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px] mt-1"
+                        >Post Code</label
+                      >
+                      <input
+                        type="text"
+                        name="postCode2"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                    <div class="flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px] mt-1"
+                        >Country</label
+                      >
+                      <input
+                        type="text"
+                        name="country1"
+                        class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col md:flex-row gap-4 w-full">
+                    <div class="w-full md:flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                        >Invoice Date</label
+                      >
+                      <div class="relative mt-3">
+                        <input
+                          type="date"
+                          id="invoiceDate"
+                          class="invoice-date-input w-full dynamic-text border border-[#7E88C3] rounded-lg py-3 px-4 font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px] dynamic-bg focus:border-[#7C5DFA] focus:ring-2 focus:ring-[#7C5DFA]/20 transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+                    <div class="w-full md:flex-1 mt-5">
+                      <label
+                        class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                        >Payment Terms</label
+                      >
+                      <div class="relative mt-3">
+                        <select
+                          id="paymentTerms"
+                          class="w-full border border-[#7E88C3] dynamic-text rounded-md p-3 font-bold text-[15px] leading-3.75 tracking-[-0.25px]  dynamic-bg"
+                        >
+                          <option value="net1">Net 1 Days</option>
+                          <option value="net7" selected>Net 7 Days</option>
+                          <option value="net14">Net 14 Days</option>
+                          <option value="net30">Net 30 Days</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5">
+                    <label
+                      class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 text-[#7E88C3] tracking-[-0.1px]"
+                      >Project Description</label
+                    >
+                    <input
+                      type="text"
+                      name="projectDescription"
+                      class="w-full border p-2 mt-2 rounded dynamic-sub-text border-[#7E88C3] bg-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Item List Section -->
+                <div class="mb-8">
+                  <h3
+                    class="text-[#777F98] font-['League_Spartan'] font-bold text-[18px] leading-8 tracking-[-0.38px]"
+                  >
+                    Item List
+                  </h3>
+
+                  <div
+                    class="grid grid-cols-12 gap-4 w-full mt-5 mb-3 items-center"
+                  >
+                    <div
+                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-5"
+                    >
+                      Item Name
+                    </div>
+                    <div
+                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-2"
+                    >
+                      Qty.
+                    </div>
+                    <div
+                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-2"
+                    >
+                      Price
+                    </div>
+                    <div
+                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-2"
+                    >
+                      Total
+                    </div>
+                    <div class="col-span-1"></div>
+                    <!-- Empty spacer matching delete icon column width -->
+                  </div>
+
+                  <div id="itemList"></div>
+
+                  <button
+                    type="button"
+                    id="addItem"
+                    class="w-full h-12 font-['League_Spartan'] font-bold text-[15px] leading-3.75 my-5 tracking-[-0.25px] text-center bg-[#cad4f9] text-[#7E88C3] rounded-full hover:bg-[#b0c0f7] transition-colors"
+                  >
+                    + Add New Item
+                  </button>
+                </div>
+
+                <!-- Form Action Controls -->
+                <div
+                  class="flex justify-between items-center gap-2 mt-12 flex-row"
+                >
+                  <button
+                    type="button"
+                    id="closeForm"
+                    class="bg-[#F9FAFE] text-[#7E88C3] font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px] rounded-full w-24 h-12"
+                  >
+                    Discard
+                  </button>
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      id="save-draft-btn"
+                      class="bg-[#373B53] text-[#7E88C3] font-['League_Spartan'] font-bold text-[12px] sm:text-[15px] leading-3.75 tracking-[-0.25px] w-28 sm:w-32 h-12 rounded-full mr-2"
+                    >
+                      Save as Draft
+                    </button>
+                    <button
+                      type="submit"
+                      class="bg-[#7C5DFA] text-[#FFFFFF] font-['League_Spartan'] font-bold text-[12px] sm:text-[15px] leading-3.75 tracking-[-0.25px] w-28 sm:w-32 h-12 rounded-full"
+                    >
+                      Save & Send
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Script Placements -->
+    <script type="module" src="/src/main.js"></script>
+    <script src="./home-page.js"></script>
+  </body>
+</html>
