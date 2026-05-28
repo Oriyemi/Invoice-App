@@ -6,7 +6,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),
-                homepage: resolve(__dirname, 'src/home-page.js'),
+                homepage: resolve(__dirname, 'home-page.js'), // ✨ Fixed: Removed 'src/'
             },
         },
     },

@@ -1,5 +1,5 @@
 import './style.css';
-import './home-page.js';
+import '../home-page.js';
 
 
 
