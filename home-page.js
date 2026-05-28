@@ -32,8 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let allInvoices = JSON.parse(localStorage.getItem("invoices")) || [];
   let editingIndex = null;
   let activeFilters = [];
-
-  // Initial render when the app loads so saved cards show up immediately
   renderInvoices();
 
   // Helper function to calculate the dynamic payment due date
@@ -41,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dateString) return "";
 
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString; // Fallback if invalid date
+    if (isNaN(date.getTime())) return dateString; 
 
     // Extract numbers from termsValue string (e.g., "net 14 days" or "14" becomes 14)
     const daysToAdd = parseInt(String(termsValue).replace(/\D/g, ""), 10) || 0;
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add days to the base invoice date
     date.setDate(date.getDate() + daysToAdd);
 
-    // Format output date nicely as DD MMM YYYY (e.g., 05 Jun 2026)
+   
     const day = String(date.getDate()).padStart(2, '0');
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const month = months[date.getMonth()];
@@ -233,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formattedInvoiceDate = `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
       }
     }
-
+ 
     const invoice = {
       billFrom: {
         street: formData.get("fromStreet"),
