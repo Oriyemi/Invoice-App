@@ -67,11 +67,11 @@
     </style>
   </head>
   <body class="dynamic-bg">
-    <section class="h-fit">
+    <section class="h-screen ">
       <div class="flex flex-col lg:flex-row lg:h-screen min-h-screen">
         <!-- Sidebar Navbar -->
         <div
-          class="flex flex-row lg:flex-col w-full lg:w-25.75 h-fit lg:h-full bg-[#373B53] lg:rounded-tr-[20px] lg:rounded-br-[20px] z-50"
+          class="flex flex-row lg:flex-col w-full lg:w-[8%] h-fit lg:h-full bg-[#373B53] lg:rounded-tr-[20px] lg:rounded-br-[20px] z-50"
         >
           <div
             class="relative w-18 h-20 lg:w-26 lg:h-25.75 bg-[#7C5DFA] rounded-r-[20px] overflow-hidden"
@@ -109,13 +109,13 @@
 
         <!-- Main Content View Area -->
         <div
-          class="dynamic-bg flex-1 py-8 lg:py-3 px-6 relative lg:h-full overflow-y-auto"
+          class="dynamic-bg flex-1 py-8 lg:py-3  relative lg:h-full overflow-y-auto max-h-screen "
         >
           <div class="max-w-182.5 max-h-fit mx-auto w-full lg:mt-10">
             <!-- Header section -->
             <div
               id="home-invoice"
-              class="flex justify-between items-center w-full max-w-182.5"
+              class="flex justify-between items-center w-full max-w-182.5 px-8"
             >
               <div>
                 <h1
@@ -238,8 +238,8 @@
           </div>
 
           <!-- Create Invoice Modal Panel -->
-          <div id="create-invoiceModal" class="hidden absolute inset-0 z-40">
-            <div class="absolute inset-0 bg-black/40"></div>
+          <div id="create-invoiceModal" class="hidden h-screen w-[100%] top-0  fixed z-40 ">
+            <div class="fixed h-screen w-[100%] bg-black/40"></div>
             <div
               class="dynamic-bg absolute top-0 left-0 w-full max-w-xl h-full overflow-y-auto shadow-2xl p-8 md:rounded-r-3xl z-50"
             >

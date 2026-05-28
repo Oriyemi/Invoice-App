@@ -28,9 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const InvoiceId = document.querySelector("#invoice-Id");
   const submitBtn = invoiceForm ? invoiceForm.querySelector('button[type="submit"]') : null;
 
-  let allInvoices = [];
+  // FIX 1: Load saved invoices from localStorage on page load, fallback to empty array if none exist
+  let allInvoices = JSON.parse(localStorage.getItem("invoices")) || [];
   let editingIndex = null;
   let activeFilters = [];
+
+  // Initial render when the app loads so saved cards show up immediately
+  renderInvoices();
 
   // Helper function to calculate the dynamic payment due date
   function calculateDueDate(dateString, termsValue) {
@@ -78,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (submitBtn) submitBtn.textContent = "Save Changes";
       if (draftBtn) draftBtn.classList.add("hidden");
     } else {
+      if (InvoiceId) InvoiceId.textContent = "New Invoice";
       if (discardBtn) discardBtn.textContent = "Discard";
       if (submitBtn) submitBtn.textContent = "Save & Send";
       if (draftBtn) draftBtn.classList.remove("hidden");
@@ -281,6 +286,9 @@ document.addEventListener("DOMContentLoaded", () => {
       allInvoices.push(invoice);
     }
 
+    // FIX 2: Save state changes after creating or editing an invoice
+    localStorage.setItem("invoices", JSON.stringify(allInvoices));
+
     if (modal) modal.classList.add("hidden");
     if (homeInvoice) homeInvoice.classList.remove("hidden");
     renderInvoices();
@@ -330,10 +338,10 @@ document.addEventListener("DOMContentLoaded", () => {
         .toFixed(2);
 
       const card = document.createElement("div");
-      card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center w-full max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
+      card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col mx-auto w-[calc(100%-3rem)] md:w-full md:flex-row md:items-center max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
 
       card.innerHTML = `
-        <div class="grid grid-cols-2 w-full gap-y-6 md:hidden">
+        <div class="grid grid-cols-2  w-full gap-y-6 md:hidden">
             <div class="text-left font-bold dynamic-text text-[14px]">
                 #INV-${index + 1}
             </div>
@@ -510,6 +518,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const handleMarkAsPaid = () => {
           inv.paymentStatus = "paid";
+          // FIX 3: Save state updates when an invoice status changes to Paid
+          localStorage.setItem("invoices", JSON.stringify(allInvoices));
           openInvoiceDetails();
         };
 
@@ -547,6 +557,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
           confirmDeleteBtn.addEventListener("click", () => {
             allInvoices.splice(index, 1);
+
+            // FIX 4: Update localStorage to reflect removal when item is deleted
+            localStorage.setItem("invoices", JSON.stringify(allInvoices));
+
             confirmationModal.classList.add("hidden");
             if (homeInvoice) homeInvoice.classList.remove("hidden");
             renderInvoices();
@@ -566,7 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
           editingIndex = index;
           openInvoiceModal();
 
-          view.querySelector('[name="fromStreet"]').value = inv.billFrom.street;
+          document.querySelector('[name="fromStreet"]').value = inv.billFrom.street;
           document.querySelector('[name="city"]').value = inv.billFrom.city;
           document.querySelector('[name="postCode"]').value = inv.billFrom.postCode;
           document.querySelector('[name="country"]').value = inv.billFrom.country;
