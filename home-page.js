@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const InvoiceId = document.querySelector("#invoice-Id");
   const submitBtn = invoiceForm ? invoiceForm.querySelector('button[type="submit"]') : null;
 
-  // FIX 1: Load saved invoices from localStorage on page load, fallback to empty array if none exist
+  // Load saved invoices from localStorage on page load
   let allInvoices = JSON.parse(localStorage.getItem("invoices")) || [];
   let editingIndex = null;
   let activeFilters = [];
@@ -39,15 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dateString) return "";
 
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString; 
+    if (isNaN(date.getTime())) return dateString;
 
-    // Extract numbers from termsValue string (e.g., "net 14 days" or "14" becomes 14)
+    // Extract numbers from termsValue string
     const daysToAdd = parseInt(String(termsValue).replace(/\D/g, ""), 10) || 0;
 
     // Add days to the base invoice date
     date.setDate(date.getDate() + daysToAdd);
 
-   
     const day = String(date.getDate()).padStart(2, '0');
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const month = months[date.getMonth()];
@@ -139,6 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const item = document.createElement("div");
     item.className = "grid grid-cols-12 gap-4 items-center mb-4 item-row";
 
+    // VITE FIX: Dynamic URL Resolution for Delete Icon
+    const deleteIconUrl = new URL('./images/delete.svg', import.meta.url).href;
+
     item.innerHTML = `
       <div class="col-span-5">
           <input type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
@@ -151,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="col-span-2 font-bold dynamic-text item-total"> 0.00 </div>
       <div class="col-span-1 text-center">
-          <img src="./src/images/delete.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer">
+          <img src="${deleteIconUrl}" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer">
       </div>
     `;
 
@@ -213,15 +215,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function submitInvoiceForm(forcedStatus = null) {
+    if (!invoiceForm) return;
     const formData = new FormData(invoiceForm);
 
     const rawInvoiceDate = formData.get("invoiceDate") || (document.getElementById("invoiceDate") ? document.getElementById("invoiceDate").value : "");
     const rawPaymentTerms = formData.get("paymentTerms") || (document.getElementById("paymentTerms") ? document.getElementById("paymentTerms").value : "");
 
-    // Dynamically calculate our dynamic payment due date string here
     const computedDueDate = calculateDueDate(rawInvoiceDate, rawPaymentTerms);
 
-    // Human-readable reformatting for invoice date output presentation standard
     let formattedInvoiceDate = rawInvoiceDate;
     if (rawInvoiceDate) {
       const d = new Date(rawInvoiceDate);
@@ -231,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formattedInvoiceDate = `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
       }
     }
- 
+
     const invoice = {
       billFrom: {
         street: formData.get("fromStreet"),
@@ -248,9 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
         country: formData.get("country1"),
       },
       invoiceDate: formattedInvoiceDate,
-      rawInvoiceDate: rawInvoiceDate, // Cached fallback to easily reload into date pickers later
+      rawInvoiceDate: rawInvoiceDate,
       paymentTerms: rawPaymentTerms,
-      paymentDueDate: computedDueDate, // Saved calculation field
+      paymentDueDate: computedDueDate,
       paymentStatus: forcedStatus || formData.get("paymentStatus") || (document.querySelector("#paymentStatus") ? document.querySelector("#paymentStatus").value : "pending"),
       projectDescription: formData.get("projectDescription"),
       items: [],
@@ -284,7 +285,6 @@ document.addEventListener("DOMContentLoaded", () => {
       allInvoices.push(invoice);
     }
 
-    // FIX 2: Save state changes after creating or editing an invoice
     localStorage.setItem("invoices", JSON.stringify(allInvoices));
 
     if (modal) modal.classList.add("hidden");
@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderInvoices();
 
     setTimeout(() => {
-      invoiceForm.reset();
+      if (invoiceForm) invoiceForm.reset();
       if (itemList) itemList.innerHTML = "";
       editingIndex = null;
     }, 50);
@@ -310,18 +310,23 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
-    if (allInvoices.length === 0) {
-      totalInvoicesText.textContent = "No invoices available";
-    } else if (allInvoices.length === 1) {
-      totalInvoicesText.textContent = "1 invoice available";
-    } else {
-      totalInvoicesText.textContent = `There are ${allInvoices.length} total invoices`;
+    if (totalInvoicesText) {
+      if (allInvoices.length === 0) {
+        totalInvoicesText.textContent = "No invoices available";
+      } else if (allInvoices.length === 1) {
+        totalInvoicesText.textContent = "1 invoice available";
+      } else {
+        totalInvoicesText.textContent = `There are ${allInvoices.length} total invoices`;
+      }
     }
 
     if (allInvoices.length === 0) {
+      // VITE FIX: Dynamic URL Resolution for Empty Campaign SVG
+      const emptyIllustrationUrl = new URL('./images/Email campaign_Flatline.svg', import.meta.url).href;
+
       invoiceDisplay.innerHTML = `
         <div class="flex flex-col items-center justify-center lg:mt-4 mt-12">
-          <img src="./src/images/Email campaign_Flatline.svg" alt="email" class="lg:mt-8" />
+          <img src="${emptyIllustrationUrl}" alt="email" class="lg:mt-8" />
           <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 lg:mt-4 dynamic-text">There is nothing here</h1>
           <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">Create an invoice by clicking the</p>
           <p class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]">New Invoice button and get started</p>
@@ -337,6 +342,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const card = document.createElement("div");
       card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col mx-auto w-[calc(100%-3rem)] md:w-full md:flex-row md:items-center max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
+
+      // VITE FIX: Dynamic URL Resolution for Drop Down Path Arrow
+      const pathArrowUrl = new URL('./images/Path 5.png', import.meta.url).href;
 
       card.innerHTML = `
         <div class="grid grid-cols-2  w-full gap-y-6 md:hidden">
@@ -376,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : `<div class="bg-[#FF8F0014] text-[#FF8F00] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FF8F00]"></span><span class="font-bold text-[12px]">Pending</span></div>`
         }
               <div class="view-btn cursor-pointer" data-index="${index}">
-                <img src="./src/images/Path 5.png" alt="drop-down">
+                <img src="${pathArrowUrl}" alt="drop-down">
               </div>
             </div>
         </div>
@@ -396,10 +404,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const view = document.createElement("div");
         view.className = `dynamic-bg dynamic-text w-full max-w-[730px] mx-auto`;
 
+        // VITE FIX: Dynamic URL Resolution for Go Back Arrow
+        const goBackIconUrl = new URL('./images/go-back.svg', import.meta.url).href;
+
         view.innerHTML = `
           <div class="w-full h-full px-4 sm:px-6 lg:px-0 pb-24 md:pb-10">
               <button class="back-btn mb-6 md:mb-8 text-[#7C5DFA] hover:text-[#9277FF] font-bold flex gap-4 items-center transition-colors">
-                  <img src="./src/images/go-back.svg" alt="go-back">
+                  <img src="${goBackIconUrl}" alt="go-back">
                   <h1 class="font-['League_Spartan'] font-bold text-[15px] leading-5 tracking-[-0.25px]">Go Back</h1>
               </button>
 
@@ -516,7 +527,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const handleMarkAsPaid = () => {
           inv.paymentStatus = "paid";
-          // FIX 3: Save state updates when an invoice status changes to Paid
           localStorage.setItem("invoices", JSON.stringify(allInvoices));
           openInvoiceDetails();
         };
@@ -555,8 +565,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           confirmDeleteBtn.addEventListener("click", () => {
             allInvoices.splice(index, 1);
-
-            // FIX 4: Update localStorage to reflect removal when item is deleted
             localStorage.setItem("invoices", JSON.stringify(allInvoices));
 
             confirmationModal.classList.add("hidden");
@@ -574,49 +582,57 @@ document.addEventListener("DOMContentLoaded", () => {
         const editInvoice = view.querySelector("#edit-invoice");
         const editInvoiceMobile = view.querySelector("#edit-invoice-mobile");
 
+        // SYSTEM FIX: Form elements safe assignment checks
         function loadInvoiceForEdit() {
           editingIndex = index;
           openInvoiceModal();
 
-          document.querySelector('[name="fromStreet"]').value = inv.billFrom.street;
-          document.querySelector('[name="city"]').value = inv.billFrom.city;
-          document.querySelector('[name="postCode"]').value = inv.billFrom.postCode;
-          document.querySelector('[name="country"]').value = inv.billFrom.country;
+          const fields = {
+            'fromStreet': inv.billFrom.street,
+            'city': inv.billFrom.city,
+            'postCode': inv.billFrom.postCode,
+            'country': inv.billFrom.country,
+            'clientName': inv.billTo.clientName,
+            'clientEmail': inv.billTo.clientEmail,
+            'StreetAddress': inv.billTo.streetAddress,
+            'city1': inv.billTo.city,
+            'postCode2': inv.billTo.postCode,
+            'country1': inv.billTo.country,
+            'invoiceDate': formatToInputDate(inv.rawInvoiceDate || inv.invoiceDate),
+            'paymentTerms': inv.paymentTerms,
+            'paymentStatus': inv.paymentStatus,
+            'projectDescription': inv.projectDescription
+          };
 
-          document.querySelector('[name="clientName"]').value = inv.billTo.clientName;
-          document.querySelector('[name="clientEmail"]').value = inv.billTo.clientEmail;
-          document.querySelector('[name="StreetAddress"]').value = inv.billTo.streetAddress;
-          document.querySelector('[name="city1"]').value = inv.billTo.city;
-          document.querySelector('[name="postCode2"]').value = inv.billTo.postCode;
-          document.querySelector('[name="country1"]').value = inv.billTo.country;
-
-          // Uses the raw format cached value to populate the form HTML5 picker perfectly
-          document.querySelector('[name="invoiceDate"]').value = formatToInputDate(inv.rawInvoiceDate || inv.invoiceDate);
-          document.querySelector('[name="paymentTerms"]').value = inv.paymentTerms;
-          document.querySelector('[name="paymentStatus"]').value = inv.paymentStatus;
-          document.querySelector('[name="projectDescription"]').value = inv.projectDescription;
-
-          itemList.innerHTML = "";
-          inv.items.forEach((itemData) => {
-            createItemRow();
-
-            const rows = document.querySelectorAll(".item-row");
-            const lastRow = rows[rows.length - 1];
-
-            lastRow.querySelector(".item-name").value = itemData.name;
-            lastRow.querySelector(".item-qty").value = itemData.qty;
-            lastRow.querySelector(".item-price").value = itemData.price;
-            lastRow.querySelector(".item-total").innerText = itemData.total;
+          Object.keys(fields).forEach(name => {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (el) el.value = fields[name] || '';
           });
+
+          if (itemList) {
+            itemList.innerHTML = "";
+            inv.items.forEach((itemData) => {
+              createItemRow();
+
+              const rows = document.querySelectorAll(".item-row");
+              if (rows.length > 0) {
+                const lastRow = rows[rows.length - 1];
+                const nameInp = lastRow.querySelector(".item-name");
+                const qtyInp = lastRow.querySelector(".item-qty");
+                const priceInp = lastRow.querySelector(".item-price");
+                const totalText = lastRow.querySelector(".item-total");
+
+                if (nameInp) nameInp.value = itemData.name;
+                if (qtyInp) qtyInp.value = itemData.qty;
+                if (priceInp) priceInp.value = itemData.price;
+                if (totalText) totalText.innerText = itemData.total;
+              }
+            });
+          }
         }
 
-        if (editInvoice) {
-          editInvoice.addEventListener("click", loadInvoiceForEdit);
-        }
-
-        if (editInvoiceMobile) {
-          editInvoiceMobile.addEventListener("click", loadInvoiceForEdit);
-        }
+        if (editInvoice) editInvoice.addEventListener("click", loadInvoiceForEdit);
+        if (editInvoiceMobile) editInvoiceMobile.addEventListener("click", loadInvoiceForEdit);
       };
 
       card.addEventListener("click", openInvoiceDetails);
