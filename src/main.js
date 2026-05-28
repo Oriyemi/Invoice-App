@@ -1,4 +1,5 @@
-import './style.css'
+import './style.css';
+import '../home-page.js';
 
 
 
