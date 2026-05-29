@@ -454,7 +454,7 @@
                     class="grid grid-cols-12 gap-4 w-full mt-5 mb-3 items-center"
                   >
                     <div
-                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-5"
+                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-4"
                     >
                       Item Name
                     </div>
@@ -469,7 +469,7 @@
                       Price
                     </div>
                     <div
-                      class="text-[#7E88C3] font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-2"
+                      class="text-[#7E88C3] font-['League_Spartan'] text-right pr-4 font-medium text-[13px] leading-3.75 tracking-[-0.1px] col-span-3 "
                     >
                       Total
                     </div>
@@ -491,6 +491,32 @@
                 <!-- Form Action Controls -->
                 <div
                   class="flex justify-between items-center gap-2 mt-12 flex-row"
+                >
+                  <button
+                    type="button"
+                    id="closeForm"
+                    class="bg-[#F9FAFE] text-[#7E88C3] font-['League_Spartan'] font-bold text-[15px] leading-3.75 tracking-[-0.25px] rounded-full w-24 h-12"
+                  >
+                    Discard
+                  </button>
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      id="save-draft-btn"
+                      class="bg-[#373B53] text-[#7E88C3] font-['League_Spartan'] font-bold text-[12px] sm:text-[15px] leading-3.75 tracking-[-0.25px] w-28 sm:w-32 h-12 rounded-full mr-2"
+                    >
+                      Save as Draft
+                    </button>
+                    <button
+                      type="submit"
+                      class="bg-[#7C5DFA] text-[#FFFFFF] font-['League_Spartan'] font-bold text-[12px] sm:text-[15px] leading-3.75 tracking-[-0.25px] w-28 sm:w-32 h-12 rounded-full"
+                    >
+                      Save & Send
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="fixed bottom-0 left-0 right-0 p-4 dynamic-card flex items-center justify-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden z-30"
                 >
                   <button
                     type="button"
