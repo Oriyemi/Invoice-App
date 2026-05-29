@@ -138,8 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const item = document.createElement("div");
     item.className = "grid grid-cols-12 gap-4 items-center mb-4 item-row";
 
-    // VITE FIX: Dynamic URL Resolution for Delete Icon
-    const deleteIconUrl = new URL('./images/delete.svg', import.meta.url).href;
+
 
     item.innerHTML = `
       <div class="col-span-5">
@@ -153,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="col-span-2 font-bold dynamic-text item-total"> 0.00 </div>
       <div class="col-span-1 text-center">
-          <img src="${deleteIconUrl}" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer">
+        <img src="./images/delete.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer"/>
       </div>
     `;
 
@@ -320,13 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    if (allInvoices.length === 0) {
-      // VITE FIX: Dynamic URL Resolution for Empty Campaign SVG
-      const emptyIllustrationUrl = new URL('./images/Email campaign_Flatline.svg', import.meta.url).href;
-
+    if (allInvoices.length === 0) { 
       invoiceDisplay.innerHTML = `
         <div class="flex flex-col items-center justify-center lg:mt-4 mt-12">
-          <img src="${emptyIllustrationUrl}" alt="email" class="lg:mt-8" />
+          <img src="./images/Email campaign_Flatline.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer"/>
           <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 lg:mt-4 dynamic-text">There is nothing here</h1>
           <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">Create an invoice by clicking the</p>
           <p class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]">New Invoice button and get started</p>
@@ -343,8 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col mx-auto w-[calc(100%-3rem)] md:w-full md:flex-row md:items-center max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
 
-      // VITE FIX: Dynamic URL Resolution for Drop Down Path Arrow
-      const pathArrowUrl = new URL('./images/Path 5.png', import.meta.url).href;
 
       card.innerHTML = `
         <div class="grid grid-cols-2  w-full gap-y-6 md:hidden">
@@ -384,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : `<div class="bg-[#FF8F0014] text-[#FF8F00] px-6 py-3 rounded-md flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FF8F00]"></span><span class="font-bold text-[12px]">Pending</span></div>`
         }
               <div class="view-btn cursor-pointer" data-index="${index}">
-                <img src="${pathArrowUrl}" alt="drop-down">
+                <img src="./images/Path 5.png" alt="drop-down">
               </div>
             </div>
         </div>
@@ -404,13 +398,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const view = document.createElement("div");
         view.className = `dynamic-bg dynamic-text w-full max-w-[730px] mx-auto`;
 
-        // VITE FIX: Dynamic URL Resolution for Go Back Arrow
-        const goBackIconUrl = new URL('./images/go-back.svg', import.meta.url).href;
-
         view.innerHTML = `
           <div class="w-full h-full px-4 sm:px-6 lg:px-0 pb-24 md:pb-10">
               <button class="back-btn mb-6 md:mb-8 text-[#7C5DFA] hover:text-[#9277FF] font-bold flex gap-4 items-center transition-colors">
-                  <img src="${goBackIconUrl}" alt="go-back">
+                  <img src="./images/go-back.svg" alt="go-back">
                   <h1 class="font-['League_Spartan'] font-bold text-[15px] leading-5 tracking-[-0.25px]">Go Back</h1>
               </button>
 
