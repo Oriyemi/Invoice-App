@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add days to the base invoice date
     date.setDate(date.getDate() + daysToAdd);
 
-    const day = String(date.getDate()).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const month = months[date.getMonth()];
     const year = date.getFullYear();
@@ -55,14 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${day} ${month} ${year}`;
   }
 
-  // Helper function to parse inputs back to YYYY-MM-DD format for form editing 
+  // Helper function to parse inputs back to YYYY-MM-DD format for form editing
   function formatToInputDate(dateStr) {
     if (!dateStr) return "";
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return "";
     const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
   }
 
@@ -132,28 +132,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Calculate and display dynamic overall modal totals if an external layout node is ever configured
+  function updateFormGrandTotal() {
+    let grandTotal = 0;
+    document.querySelectorAll(".item-row").forEach(row => {
+      const totalDisplay = row.querySelector(".item-total");
+      if (totalDisplay) {
+        const value = Number(totalDisplay.innerText.replace(/,/g, "")) || 0;
+        grandTotal += value;
+      }
+    });
+    // Hook point if you need to display form-level running totals down the line
+  }
+
   function createItemRow() {
     if (!itemList) return;
 
     const item = document.createElement("div");
     item.className = "grid grid-cols-12 gap-4 items-center mb-4 item-row";
 
-
-
     item.innerHTML = `
-      <div class="col-span-5">
-          <input type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
-      </div>
-      <div class="col-span-2">
-          <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty" required >
-      </div>
-      <div class="col-span-2">
-          <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price" required >
-      </div>
-      <div class="col-span-2 font-bold dynamic-text item-total"> 0.00 </div>
-      <div class="col-span-1 text-center">
-        <img src="./images/delete.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer"/>
-      </div>
+    <div class="col-span-4"> 
+      <input type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
+    </div>
+    <div class="col-span-2">
+      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty" min="1" max="9999" required >
+    </div>
+    <div class="col-span-2">
+      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price" min="1" max="999999" required >
+    </div>
+    <div class="col-span-3 font-bold dynamic-text item-total text-right self-center pr-2 truncate">0.00</div>
+    <div class="col-span-1 text-center self-center">
+      <img src="./images/delete.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer inline-block"/>
+    </div>
     `;
 
     itemList.appendChild(item);
@@ -165,7 +176,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateTotal() {
       const qty = Number(qtyInput.value) || 0;
       const price = Number(priceInput.value) || 0;
-      totalDisplay.innerText = (qty * price).toFixed(2);
+      const rawTotal = qty * price;
+
+      totalDisplay.innerText = rawTotal.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      updateFormGrandTotal();
     }
 
     qtyInput.addEventListener("input", updateTotal);
@@ -175,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     item.querySelector(".delete-item").addEventListener("click", () => {
       item.remove();
+      updateFormGrandTotal();
     });
   }
 
@@ -189,10 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
     emailInput.addEventListener("change", () => {
       const isValid = emailInput.value.includes("@") && emailInput.value.includes(".");
       if (isValid) {
-        emailError.textContent = "";
+        if (emailError) emailError.textContent = "";
         emailInput.classList.remove("border-red-500");
       } else {
-        emailError.textContent = "Please enter a valid email";
+        if (emailError) emailError.textContent = "Please enter a valid email";
         emailInput.classList.add("border-red-500");
       }
     });
@@ -226,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rawInvoiceDate) {
       const d = new Date(rawInvoiceDate);
       if (!isNaN(d.getTime())) {
-        const day = String(d.getDate()).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, "0");
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         formattedInvoiceDate = `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
       }
@@ -304,9 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let invoicesToRender = allInvoices;
 
     if (activeFilters.length > 0) {
-      invoicesToRender = invoicesToRender.filter((inv) =>
-        activeFilters.includes(inv.paymentStatus)
-      );
+      invoicesToRender = invoicesToRender.filter((inv) => activeFilters.includes(inv.paymentStatus));
     }
 
     if (totalInvoicesText) {
@@ -319,10 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    if (allInvoices.length === 0) { 
+    if (allInvoices.length === 0) {
       invoiceDisplay.innerHTML = `
         <div class="flex flex-col items-center justify-center lg:mt-4 mt-12">
-          <img src="./images/Email campaign_Flatline.svg" alt="delete" class="delete-item text-gray-400 hover:text-red-500 cursor-pointer"/>
+          <img src="./images/Email campaign_Flatline.svg" alt="empty" class="text-gray-400"/>
           <h1 class="font-['League_Spartan'] font-bold text-[24px] leading-[100%] tracking-[-0.75px] mt-16 lg:mt-4 dynamic-text">There is nothing here</h1>
           <p class="font-['League_Spartan'] font-medium text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0] mt-5">Create an invoice by clicking the</p>
           <p class="font-['League_Spartan'] font-bold text-[13px] leading-3.75 tracking-[-0.1px] text-center text-[#888EB0]">New Invoice button and get started</p>
@@ -333,22 +349,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     invoicesToRender.forEach((inv, index) => {
       const totalAmount = inv.items
-        .reduce((sum, item) => sum + Number(item.total), 0)
-        .toFixed(2);
+        .reduce((sum, item) => {
+          const cleanTotal = String(item.total).replace(/,/g, "");
+          return sum + (Number(cleanTotal) || 0);
+        }, 0)
+        .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
       const card = document.createElement("div");
       card.className = "dynamic-card dynamic-text dynamic-sub-text p-6 rounded-lg shadow-sm flex flex-col mx-auto w-[calc(100%-3rem)] md:w-full md:flex-row md:items-center max-w-[730px] justify-between border border-transparent hover:border-[#7C5DFA] mb-4 font-['League_Spartan'] cursor-pointer transition-all";
 
-
       card.innerHTML = `
-        <div class="grid grid-cols-2  w-full gap-y-6 md:hidden">
-            <div class="text-left font-bold dynamic-text text-[14px]">
-                #INV-${index + 1}
-            </div>
-            <div class="text-right dynamic-sub-text text-[13px] font-medium text-[#858BB2]">
-                ${inv.billTo.clientName}
-            </div>
-
+        <div class="grid grid-cols-2 w-full gap-y-6 md:hidden">
+            <div class="text-left font-bold dynamic-text text-[14px]">#INV-${index + 1}</div>
+            <div class="text-right dynamic-sub-text text-[13px] font-medium text-[#858BB2]">${inv.billTo.clientName}</div>
             <div class="flex flex-col gap-2 justify-end">
                 <span class="dynamic-sub-text text-[13px]">Due ${inv.paymentDueDate || inv.invoiceDate}</span>
                 <span class="dynamic-text font-bold text-[16px] tracking-[-0.8px]">£ ${totalAmount}</span>
@@ -390,10 +403,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (homeInvoice) homeInvoice.classList.add("hidden");
         invoiceDisplay.innerHTML = "";
 
-        const existingModal = document.querySelector("#delete-confirmation-modal");
-        if (existingModal) {
-          existingModal.remove();
-        }
+        // Safe Clean: Check and remove existing global instances of the confirmation layer
+        const oldModal = document.getElementById("delete-confirmation-modal");
+        if (oldModal) oldModal.remove();
 
         const view = document.createElement("div");
         view.className = `dynamic-bg dynamic-text w-full max-w-[730px] mx-auto`;
@@ -427,13 +439,13 @@ document.addEventListener("DOMContentLoaded", () => {
                   <div class="flex flex-col md:flex-row justify-between gap-6 md:gap-8 mb-8">
                       <div>
                           <h1 class="font-bold text-[16px] md:text-[20px] dynamic-text">#INV-${index + 1}</h1>
-                          <p class="text-[#7E88C3] dynamic-sub-text text-[13px] mt-1">${inv.projectDescription}</p>
+                          <p class="text-[#7E88C3] dynamic-sub-text text-[13px] mt-1">${inv.projectDescription || ""}</p>
                       </div>
                       <div class="text-left md:text-right text-[#7E88C3] dynamic-sub-text text-[13px] leading-5">
-                          <p>${inv.billFrom.street}</p>
-                          <p>${inv.billFrom.city}</p>
-                          <p>${inv.billFrom.postCode}</p>
-                          <p>${inv.billFrom.country}</p>
+                          <p>${inv.billFrom.street || ""}</p>
+                          <p>${inv.billFrom.city || ""}</p>
+                          <p>${inv.billFrom.postCode || ""}</p>
+                          <p>${inv.billFrom.country || ""}</p>
                       </div>
                   </div>
 
@@ -441,28 +453,28 @@ document.addEventListener("DOMContentLoaded", () => {
                       <div class="flex flex-col justify-between gap-4">
                           <div>
                               <p class="text-[#7E88C3] text-[13px] mb-2">Invoice Date</p>
-                              <h2 class="font-bold text-[15px] dynamic-text">${inv.invoiceDate}</h2>
+                              <h2 class="font-bold text-[15px] dynamic-text">${inv.invoiceDate || ""}</h2>
                           </div>
                           <div>
                               <p class="text-[#7E88C3] text-[13px] mb-2">Payment Due</p>
-                              <h2 class="font-bold text-[15px] dynamic-text">${inv.paymentDueDate || inv.paymentTerms}</h2>
+                              <h2 class="font-bold text-[15px] dynamic-text">${inv.paymentDueDate || inv.paymentTerms || ""}</h2>
                           </div>
                       </div>
 
                       <div>
                           <p class="text-[#7E88C3] text-[13px] mb-2">Bill To</p>
-                          <h2 class="font-bold text-[15px] dynamic-text mb-2">${inv.billTo.clientName}</h2>
+                          <h2 class="font-bold text-[15px] dynamic-text mb-2">${inv.billTo.clientName || ""}</h2>
                           <div class="text-[#7E88C3] dynamic-sub-text text-[13px] leading-5">
-                              <p>${inv.billTo.streetAddress}</p>
-                              <p>${inv.billTo.city}</p>
-                              <p>${inv.billTo.postCode}</p>
-                              <p>${inv.billTo.country}</p>
+                              <p>${inv.billTo.streetAddress || ""}</p>
+                              <p>${inv.billTo.city || ""}</p>
+                              <p>${inv.billTo.postCode || ""}</p>
+                              <p>${inv.billTo.country || ""}</p>
                           </div>
                       </div>
 
                       <div class="col-span-2 md:col-span-2">
                           <p class="text-[#7E88C3] text-[13px] mb-2">Sent to</p>
-                          <h2 class="font-bold text-[15px] dynamic-text break-all">${inv.billTo.clientEmail}</h2>
+                          <h2 class="font-bold text-[15px] dynamic-text break-all">${inv.billTo.clientEmail || ""}</h2>
                       </div>
                   </div>
 
@@ -475,7 +487,9 @@ document.addEventListener("DOMContentLoaded", () => {
                       </div>
 
                       <div class="flex flex-col gap-6">
-                          ${inv.items.map(item => `
+                          ${inv.items
+            .map(
+              (item) => `
                               <div class="grid grid-cols-2 md:grid-cols-4 items-center justify-between font-bold">
                                   <div>
                                       <p class="dynamic-text text-[15px]">${item.name}</p>
@@ -485,9 +499,11 @@ document.addEventListener("DOMContentLoaded", () => {
                                   </div>
                                   <div class="hidden md:block text-center text-[#7E88C3] text-[15px]">${item.qty}</div>
                                   <div class="hidden md:block text-right text-[#7E88C3] text-[15px]">£ ${Number(item.price).toFixed(2)}</div>
-                                  <div class="text-right dynamic-text text-[15px]">£ ${Number(item.total).toFixed(2)}</div>
+                                  <div class="text-right dynamic-text text-[15px]">£ ${Number(String(item.total).replace(/,/g, "")).toFixed(2)}</div>
                               </div>
-                          `).join("")}
+                          `,
+            )
+            .join("")}
                       </div>
                   </div>
 
@@ -559,9 +575,12 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("invoices", JSON.stringify(allInvoices));
 
             confirmationModal.classList.add("hidden");
+            confirmationModal.remove(); // Drop from DOM node layer safely on deletion finish
             if (homeInvoice) homeInvoice.classList.remove("hidden");
             renderInvoices();
-          }, { once: true });
+          },
+            { once: true }
+          );
         };
 
         const deleteBtn = view.querySelector("#delete-invoice");
@@ -573,31 +592,30 @@ document.addEventListener("DOMContentLoaded", () => {
         const editInvoice = view.querySelector("#edit-invoice");
         const editInvoiceMobile = view.querySelector("#edit-invoice-mobile");
 
-        // SYSTEM FIX: Form elements safe assignment checks
         function loadInvoiceForEdit() {
           editingIndex = index;
           openInvoiceModal();
 
           const fields = {
-            'fromStreet': inv.billFrom.street,
-            'city': inv.billFrom.city,
-            'postCode': inv.billFrom.postCode,
-            'country': inv.billFrom.country,
-            'clientName': inv.billTo.clientName,
-            'clientEmail': inv.billTo.clientEmail,
-            'StreetAddress': inv.billTo.streetAddress,
-            'city1': inv.billTo.city,
-            'postCode2': inv.billTo.postCode,
-            'country1': inv.billTo.country,
-            'invoiceDate': formatToInputDate(inv.rawInvoiceDate || inv.invoiceDate),
-            'paymentTerms': inv.paymentTerms,
-            'paymentStatus': inv.paymentStatus,
-            'projectDescription': inv.projectDescription
+            fromStreet: inv.billFrom.street,
+            city: inv.billFrom.city,
+            postCode: inv.billFrom.postCode,
+            country: inv.billFrom.country,
+            clientName: inv.billTo.clientName,
+            clientEmail: inv.billTo.clientEmail,
+            StreetAddress: inv.billTo.streetAddress,
+            city1: inv.billTo.city,
+            postCode2: inv.billTo.postCode,
+            country1: inv.billTo.country,
+            invoiceDate: formatToInputDate(inv.rawInvoiceDate || inv.invoiceDate),
+            paymentTerms: inv.paymentTerms,
+            paymentStatus: inv.paymentStatus,
+            projectDescription: inv.projectDescription,
           };
 
-          Object.keys(fields).forEach(name => {
+          Object.keys(fields).forEach((name) => {
             const el = document.querySelector(`[name="${name}"]`);
-            if (el) el.value = fields[name] || '';
+            if (el) el.value = fields[name] || "";
           });
 
           if (itemList) {
@@ -619,6 +637,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (totalText) totalText.innerText = itemData.total;
               }
             });
+            updateFormGrandTotal();
           }
         }
 
