@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         grandTotal += value;
       }
     });
-    // Hook point if you need to display form-level running totals down the line
+   
   }
 
   function createItemRow() {
@@ -156,10 +156,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <input type="text" placeholder="Item Name" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-name" required >
     </div>
     <div class="col-span-2">
-      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty" min="1" max="9999" required >
+      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-qty"  required >
     </div>
     <div class="col-span-2">
-      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price" min="1" max="999999" required >
+      <input type="number" class="w-full border border-[#7E88C3] p-2 rounded dynamic-bg dynamic-sub-text item-price"  required >
     </div>
     <div class="col-span-3 font-bold dynamic-text item-total text-right self-center pr-2 truncate">0.00</div>
     <div class="col-span-1 text-center self-center">
